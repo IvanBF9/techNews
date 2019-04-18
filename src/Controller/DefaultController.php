@@ -9,6 +9,8 @@
 namespace App\Controller;
 
 
+use App\Entity\Article;
+use App\Entity\Categorie;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,7 +21,19 @@ class DefaultController extends AbstractController
      * Page d'accueil
      */
     public function index(){
-        return $this->render("default/index.html.twig");
+
+        $repository = $this->getDoctrine()
+            ->getRepository(Article::class);
+
+        # je recupere touts les articles de ma base
+        $articles = $repository->findAll();
+        $spotlight = $repository->findBySpotlight();
+
+        #affichage
+        return $this->render("default/index.html.twig.", [
+            'articles' => $articles,
+            'spotlight' => $spotlight
+        ]);
         #return new Response("<html><body><h1>PAGE D'ACCUEIL</h1></body></html>");
     }
     public function contact(){
@@ -36,8 +50,31 @@ class DefaultController extends AbstractController
      *     name="default_categorie")
      */
     public function categorieslug($slug){
-        return $this->render("default/categorie.html.twig");
-        return new Response("<html><body><h1>Page categorie: $slug</h1></body></html>");
+        /*
+         * Récupérer la catégorie correspondant au "slug"
+         * passer en paramétre de la route .
+         * ------------------------------------------
+         * on récupère le paramétre "slug" de la route
+         * (url) dans notre variable $slug
+         */
+        $categorie = $this->getDoctrine()
+            ->getRepository(Categorie::class)
+            ->findOneBy(['slug' => $slug]);
+
+        /*
+         * Grâce a la relation entre Article et Catégorie (OneToMany),
+         * je suis en mesure de récupérer les articles d'une catégorie.
+         */
+        $articles = $categorie->getArticles();
+
+        /*
+         * j'envoi a ma vue les données a afficher.
+         */
+        return $this->render('default/categorie.html.twig', [
+            'articles' => $articles,
+            'categorie'=>$categorie
+        ]);
+        #return new Response("<html><body><h1>Page categorie: $slug</h1></body></html>");
     }
 
     /**
@@ -48,6 +85,17 @@ class DefaultController extends AbstractController
     public function article($categorie, $slug, $id){
         #Examle d'URL:
         # /politique/macron_498498.html
-        return $this->render('default/article.html.twig');
+
+        /*
+         * Récupération de l'article correspondant a
+         * l'ID en paramétre de notre route.
+         */
+        $article = $this->getDoctrine()
+            ->getRepository(Article::class)
+            ->find($id);
+
+        return $this->render('default/article.html.twig', [
+            'article' => $article
+        ]);
     }
 }

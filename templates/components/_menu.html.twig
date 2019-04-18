@@ -5,18 +5,12 @@
             <li>
                 <a href="{{ path('accueil') }}">Accueil </a>
             </li>
+            {% for categorie in categories %}
             <li>
                 <a href="{{ path('default_categorie', {
-                    'slug' : 'politique'}) }}">Politique</a>
+                    'slug' : categorie.slug}) }}">{{ categorie.nom }} </a>
             </li>
-            <li>
-                <a href="{{ path('default_categorie', {
-                    'slug' : 'economie'}) }}">Economie</a>
-            </li>
-            <li>
-                <a href="{{ path('default_categorie', {
-                    'slug' : 'culture'}) }}">Culture </a>
-            </li>
+            {% endfor %}
         </ul>
     </div>
 </nav>
@@ -42,18 +36,12 @@
                 <li>
                     <a href="{{ path('accueil') }}">Accueil </a>
                 </li>
-                <li>
-                    <a href="{{ path('default_categorie', {
-                    'slug' : 'politique'}) }}">Politique</a>
-                </li>
-                <li>
-                    <a href="{{ path('default_categorie', {
-                        'slug' : 'economie'}) }}">Economie</a>
-                </li>
-                <li>
-                    <a href="{{ path('default_categorie', {
-                        'slug' : 'culture'}) }}">Culture </a>
-                </li>
+                {% for categorie in categories %}
+                    <li>
+                        <a href="{{ path('default_categorie', {
+                            'slug' : categorie.slug}) }}">{{ categorie.nom }} </a>
+                    </li>
+                {% endfor %}
             </ul>
             <div class="search-icon">
                 <div class="search-icon-inner">
