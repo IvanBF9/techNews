@@ -11,6 +11,18 @@
                     'slug' : categorie.slug}) }}">{{ categorie.nom }} </a>
             </li>
             {% endfor %}
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <li>
+                    <a href="{{ path('membre_deconnexion') }}">Deconnexion</a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ path('membre_connexion') }}">Connexion</a>
+                </li>
+                <li>
+                    <a href="{{ path('membre_inscription') }}">Inscription</a>
+                </li>
+            {% endif %}
         </ul>
     </div>
 </nav>
@@ -42,6 +54,18 @@
                             'slug' : categorie.slug}) }}">{{ categorie.nom }} </a>
                     </li>
                 {% endfor %}
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <li>
+                    <a href="{{ path('membre_deconnexion') }}">Deconnexion</a>
+                </li>
+                {% else %}
+                <li>
+                    <a href="{{ path('membre_connexion') }}">Connexion</a>
+                </li>
+                <li>
+                    <a href="{{ path('membre_inscription') }}">Inscription</a>
+                </li>
+                {% endif %}
             </ul>
             <div class="search-icon">
                 <div class="search-icon-inner">

@@ -11,6 +11,11 @@
     <div class="row">
         <!--colleft-->
         <div class="col-md-8 col-sm-12">
+            {% for message in app.flashes('notice') %}
+                <div class="alert alert-info">
+                    {{ message }}
+                </div>
+            {% endfor %}
             <!--post-detail-->
             <article class="post-detail">
                 <h1>{{ article.titre }}</h1>
@@ -32,7 +37,8 @@
                 {{ article.contenu | raw }}
 
 
-                <h5 class="text-right font-heading"><strong>{{ article.membre.prenom ~ ' ' ~ article.membre.nom }}</strong></h5>
+                <h5 class="text-right font-heading">
+                    <strong>{{ article.membre.prenom ~ ' ' ~ article.membre.nom }}</strong></h5>
 
             </article>
             <!--social-detail-->
@@ -144,7 +150,7 @@
                 </div>
             </section>
         </div>
-        {% include 'components/_sidebar.html.twig' %}
+        {{ render(controller('App\\Controller\\DefaultController::sidebar')) }}
     </div>
 {% endblock %}
 

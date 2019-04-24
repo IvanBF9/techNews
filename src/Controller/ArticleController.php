@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Etudiant
- * Date: 17/04/2019
- * Time: 14:51
- */
+
 
 namespace App\Controller;
 
@@ -12,12 +7,16 @@ namespace App\Controller;
 use App\Entity\Article;
 use App\Entity\Categorie;
 use App\Entity\Membre;
+use App\Form\ArticleFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ArticleController extends AbstractController
 {
+    use HelperTrait;
     /**
      * Demonstration de l'ajout d'un article avec Doctrine
      * @Route("/demo/article", name="article_demo")
@@ -72,5 +71,77 @@ class ArticleController extends AbstractController
         . 'de Auteur : '
         . $membre->getPrenom()
         );
+    }
+    /**
+     *  Formulaire pour créer un article
+     * @Route("/creer-un-article", name="article_add")
+     */
+    public function addArticle(Request $request)
+    {
+        # Création d'un nouvel article
+        $article = new Article();
+
+        #Récupération d'un Auteur (Membre)
+        $membre = $this->getDoctrine()
+            ->getRepository(Membre::class)
+            ->find(1);
+
+        #Affecter un Auteur a l'Article
+        $article->setMembre($membre);
+
+        #Création d'un formulaire permettant l'ajout d'un article
+        $form = $this->createForm(ArticleFormType::class, $article);
+
+        # Traitement des donées POST
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()){
+        #dump($article);
+            #1. Génération du slug
+            $article->setSlug($this->slugify($article->getTitre()));
+
+            #2. Traitement de l'upload de l'image
+
+            /** @var UploadedFile $file */
+            $file = $article->getFeaturedImage();
+
+            $fileName = $article->getSlug().'.'.$file->guessExtension();
+
+            // Move the file to the directory where brochures are stored
+            try {
+                $file->move(
+                    $this->getParameter('images_directory'),
+                    $fileName
+                );
+            } catch (FileException $e) {
+                // ... handle exception if something happens during file upload
+            }
+
+            // updates the 'brochure' property to store the PDF file name
+            // instead of its contents
+            $article->setFeaturedImage($fileName);
+
+            // ... persist the $product variable or any other work
+
+
+            #3. Sauvegarde en BDD
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($article);
+            $em->flush();
+            #4. Notification
+            $this->addFlash('notice',
+                'Félicitations, votre article est en ligne !');
+            #5. Redirection
+            return $this->redirectToRoute('default_article',[
+                'categorie' => $article->getCategorie()->getSlug(),
+                'slug' => $article->getSlug(),
+                'id' => $article->getId()
+            ]);
+        }
+
+        # Affichage du formulaire dans la vue
+        return $this->render("article/addform.html.twig", [
+           'form' => $form->createView()
+        ]);
     }
 }

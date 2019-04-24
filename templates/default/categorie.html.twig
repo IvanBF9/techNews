@@ -47,7 +47,7 @@
                                         {{ article.dateCreation | date('d/m/Y') }}
                                     </span>
                                     </div>
-                                    {{ article.contenu | raw }}
+                                    {{ article.contenu | summarize }}
                                 </div>
                             </div>
                         </article>
@@ -70,6 +70,6 @@
             </div>#}
 
         </div>
-        {% include 'components/_sidebar.html.twig' %}
+        {{ render(controller('App\\Controller\\DefaultController::sidebar')) }}
     </div>
 {% endblock %}

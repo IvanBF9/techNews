@@ -1,0 +1,24 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}
+    Connexion
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8 col-sm-12">
+            {% for message in app.flashes('notice') %}
+                <div class="alert alert-info">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            <h3>Connexion</h3>
+            {{ form( form, { attr: { novalidate: 'novalidate' } } ) }}
+        </div>
+        {{ render(controller('App\\Controller\\DefaultController::sidebar')) }}
+    </div>
+
+{% endblock %}
+
+
+

@@ -59,7 +59,8 @@ class DefaultController extends AbstractController
          */
         $categorie = $this->getDoctrine()
             ->getRepository(Categorie::class)
-            ->findOneBy(['slug' => $slug]);
+            ->findOneBy(['slug' => $slug])
+            ;
 
         /*
          * Grâce a la relation entre Article et Catégorie (OneToMany),
@@ -96,6 +97,25 @@ class DefaultController extends AbstractController
 
         return $this->render('default/article.html.twig', [
             'article' => $article
+        ]);
+    }
+
+    #génération de la sidebar
+
+    public function sidebar(){
+        $repository = $this->getDoctrine()
+            ->getRepository(Article::class);
+
+        #Récupération des 5 derniers articles
+        $articles = $repository->findByLatest();
+
+        #Récupération des articles a la position "spécial"
+        $special = $repository->findBySpecial();
+
+        #Transmition des informations a la vue.
+        return $this->render('components/_sidebar.html.twig', [
+            'articles' => $articles,
+            'special' => $special
         ]);
     }
 }
